@@ -1,0 +1,1 @@
+cat reference.bag.zip.* > reference.bag.zip
