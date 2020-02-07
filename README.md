@@ -88,3 +88,27 @@ Specific to these libraries, the simulator grader and Carla use the following:
 | OpenMP | N/A | N/A |
 
 We are working on a fix to line up the OpenCV versions between the two.
+
+### Some useful command when running the project
+I have found the following command handy when developping the project, by using two different terminals:
+
+Terminal 1: Initialise the environment.
+```bash
+$cd ~/github/sdc--capstone-project/ros/ && source devel/setup.bash
+```
+
+Terminal 1: Launch ros.
+```bash
+$ rm -rf /home/student/.ros/log/* ; tput reset ; roslaunch launch/styx.launch
+```
+
+At this moment, I would open the sdc simulator, and click select and remove the manual check.
+The car should start moving
+
+Terminal 2: Stop ros.
+To stop the project, from a different terminal enter:
+```bash
+$ tput reset && rosnode kill -a && sleep 1 && kill $(pgrep roslaunch)
+```
+
+
