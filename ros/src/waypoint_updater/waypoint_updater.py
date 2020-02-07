@@ -32,13 +32,15 @@ class WaypointUpdater(object):
         # TODO: Remove log level before submitting for review
         rospy.init_node('waypoint_updater', log_level=rospy.DEBUG)
 
+        rospy.logdebug('MM - WaypointUpdater.__init__(...)')
+
         rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
         rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
 
         # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
 
 
-        self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
+        self.final_waypoints_pub = rospy.Publisher('/final_waypoints', Lane, queue_size=1)
 
         # TODO: Add other member variables you need below
         self.pose = None
@@ -49,15 +51,19 @@ class WaypointUpdater(object):
         self.loop()
 
     def loop(self):
+        rospy.logdebug('MM - WaypointUpdater.loop()')
+
         rate = rospy.Rate(50) # TODO: Try with ~30Hz-35Hz
         while not rospy.is_shutdown():
-            if self.pose and self.base_waypoints:
+            if self.pose and self.base_waypoints and self.waypoint_tree:
                 # Get closest waypoint
                 closest_waypoint_idx = self.get_closest_waypoint_idx()
                 self.publish_waypoint(closest_waypoint_idx)
             rate.sleep()
 
     def get_closest_waypoint_idx(self):
+        rospy.logdebug('MM - WaypointUpdater.get_closest_waypoint_idx()')
+
         x = self.pose.pose.position.x
         y = self.pose.pose.position.y
         closest_idx = self.waypoint_tree.query([x, y], 1)[1]
@@ -75,9 +81,12 @@ class WaypointUpdater(object):
 
         if val > 0:
             closest_idx = (closest_idx + 1) % len(self.waypoints_2d)
+
         return closest_idx
 
     def publish_waypoint(self, closest_idx):
+        rospy.logdebug('MM - WaypointUpdater.publish_waypoint(...)')
+
         lane = Lane()
         lane.header = self.base_waypoints.header
         # TODO: Make sure it works in both tracks.
@@ -88,9 +97,13 @@ class WaypointUpdater(object):
         self.final_waypoints_pub.publish(lane)
 
     def pose_cb(self, msg):
+        rospy.logdebug('MM - WaypointUpdater.pose_cb(...)')
+
         self.pose = msg
 
     def waypoints_cb(self, waypoints):
+        rospy.logdebug('MM - WaypointUpdater.waypoints_cb(...)')
+
         self.base_waypoints = waypoints
         if not self.waypoints_2d:
             self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints]
@@ -98,19 +111,30 @@ class WaypointUpdater(object):
 
     def traffic_cb(self, msg):
         # TODO: Callback for /traffic_waypoint message. Implement
+        rospy.logdebug('MM - WaypointUpdater.traffic_cb(pass)')
+
         pass
 
     def obstacle_cb(self, msg):
         # TODO: Callback for /obstacle_waypoint message. We will implement it later
+
+        rospy.logdebug('MM - WaypointUpdater.obstacle_cb(pass)')
+
         pass
 
     def get_waypoint_velocity(self, waypoint):
+        rospy.logdebug('MM - WaypointUpdater.get_waypoint_velocity(...)')
+
         return waypoint.twist.twist.linear.x
 
     def set_waypoint_velocity(self, waypoints, waypoint, velocity):
+        rospy.logdebug('MM - WaypointUpdater.set_waypoint_velocity(...)')
+
         waypoints[waypoint].twist.twist.linear.x = velocity
 
     def distance(self, waypoints, wp1, wp2):
+        rospy.logdebug('MM - WaypointUpdater.distance(...)')
+
         dist = 0
         dl = lambda a, b: math.sqrt((a.x-b.x)**2 + (a.y-b.y)**2  + (a.z-b.z)**2)
         for i in range(wp1, wp2+1):
