@@ -4,7 +4,7 @@ from math import atan
 
 class YawController(object):
     def __init__(self, wheel_base, steer_ratio, min_speed, max_lat_accel, max_steer_angle):
-        rospy.logdebug('MM - YawController.__init__(...)')
+        # rospy.logdebug('MM - YawController.__init__(...)')
 
         self.wheel_base = wheel_base
         self.steer_ratio = steer_ratio
@@ -16,13 +16,13 @@ class YawController(object):
 
 
     def get_angle(self, radius):
-        rospy.logdebug('MM - YawController.get_angle(...)')
+        # rospy.logdebug('MM - YawController.get_angle(...)')
 
         angle = atan(self.wheel_base / radius) * self.steer_ratio
         return max(self.min_angle, min(self.max_angle, angle))
 
     def get_steering(self, linear_velocity, angular_velocity, current_velocity):
-        rospy.logdebug('MM - YawController.get_steering(...)')
+        # rospy.logdebug('MM - YawController.get_steering(...)')
 
         angular_velocity = current_velocity * angular_velocity / linear_velocity if abs(linear_velocity) > 0. else 0.
 

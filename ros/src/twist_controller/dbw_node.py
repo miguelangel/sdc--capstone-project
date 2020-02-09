@@ -33,9 +33,9 @@ that we have created in the `__init__` function.
 
 class DBWNode(object):
     def __init__(self):
-        rospy.init_node('dbw_node', log_level=rospy.DEBUG)
+        rospy.init_node('dbw_node')
 
-        rospy.logdebug('MM - DBWNode.__init__(...)')
+        # rospy.logdebug('MM - DBWNode.__init__(...)')
 
         # I will use these parameters
         vehicle_mass = rospy.get_param('~vehicle_mass', 1736.35)
@@ -87,7 +87,6 @@ class DBWNode(object):
         self.loop()
 
     def loop(self):
-        rospy.logdebug('MM - DBWNode.loop()')
         rate = rospy.Rate(50) # 50Hz
         while not rospy.is_shutdown():
             # TODO: Get predicted throttle, brake, and steering using `twist_controller`
@@ -105,23 +104,23 @@ class DBWNode(object):
             rate.sleep()
 
     def dbw_enabled_cb(self, msg):
-        rospy.logdebug('MM - DBWNode.dbw_enabled_cb(...)')
+        # rospy.logdebug('MM - DBWNode.dbw_enabled_cb(...)')
 
         self.dbw_enabled = msg
 
     def twist_cb(self, msg):
-        rospy.logdebug('MM - DBWNode.twist_cb(...)')
+        # rospy.logdebug('MM - DBWNode.twist_cb(...)')
 
         self.linear_vel = msg.twist.linear.x
         self.angular_vel = msg.twist.angular.z
 
     def velocity_cb(self, msg):
-        rospy.logdebug('MM - DBWNode.velocity_cb(...)')
+        # rospy.logdebug('MM - DBWNode.velocity_cb(...)')
 
         self.current_vel = msg.twist.linear.x
 
     def publish(self, throttle, brake, steer):
-        rospy.logdebug('MM - DBWNode.publish(...)')
+        # rospy.logdebug('MM - DBWNode.publish(...)')
 
         tcmd = ThrottleCmd()
         tcmd.enable = True

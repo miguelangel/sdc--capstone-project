@@ -30,10 +30,9 @@ MAX_DECEL = 0.5
 
 class WaypointUpdater(object):
     def __init__(self):
-        # TODO: Remove log level before submitting for review
-        rospy.init_node('waypoint_updater', log_level=rospy.DEBUG)
+        rospy.init_node('waypoint_updater')
 
-        rospy.logdebug('MM - WaypointUpdater.__init__(...)')
+        # rospy.logdebug('MM - WaypointUpdater.__init__(...)')
 
         # TODO: Add a subscriber for /obstacle_waypoint below
         rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
@@ -51,7 +50,7 @@ class WaypointUpdater(object):
         self.loop()
 
     def loop(self):
-        rospy.logdebug('MM - WaypointUpdater.loop()')
+        # rospy.logdebug('MM - WaypointUpdater.loop()')
 
         rate = rospy.Rate(50) # TODO: Try with ~30Hz-35Hz
         while not rospy.is_shutdown():
@@ -62,7 +61,7 @@ class WaypointUpdater(object):
             rate.sleep()
 
     def get_closest_waypoint_idx(self):
-        rospy.logdebug('MM - WaypointUpdater.get_closest_waypoint_idx()')
+        # rospy.logdebug('MM - WaypointUpdater.get_closest_waypoint_idx()')
 
         x = self.pose.pose.position.x
         y = self.pose.pose.position.y
@@ -85,18 +84,20 @@ class WaypointUpdater(object):
         return closest_idx
 
     def publish_waypoint(self, closest_idx):
-        rospy.logdebug('MM - WaypointUpdater.publish_waypoint(...)')
+        # rospy.logdebug('MM - WaypointUpdater.publish_waypoint(...)')
 
         lane = self.generate_lane()
         self.final_waypoints_pub.publish(lane)
 
-    def generate_lane(self)
-        rospy.logdebug('MM - WaypointUpdater.generate_lane()')
-
+    def generate_lane(self):
         # TODO: Make sure it works in both tracks.
         # When the ego-car is arriving to the end of the track, it stops.
         # Use Modulo maybe?
+
+        # rospy.logdebug('MM - WaypointUpdater.generate_lane()')
+
         lane = Lane()
+        lane.header = self.base_lane.header
 
         closest_idx = self.get_closest_waypoint_idx()
         farthest_idx = closest_idx + LOOKAHEAD_WPS
@@ -110,6 +111,8 @@ class WaypointUpdater(object):
         return lane
 
     def decelerate_waypoints(self, waypoints, closest_idx):
+        # rospy.logdebug('MM - WaypointUpdater.decelerate_waypoints(...)')
+
         decelerated_waypoints = []
         for i, wp in enumerate(waypoints):
             p = Waypoint()
@@ -127,12 +130,12 @@ class WaypointUpdater(object):
         return decelerated_waypoints
 
     def pose_cb(self, msg):
-        rospy.logdebug('MM - WaypointUpdater.pose_cb(...)')
+        # rospy.logdebug('MM - WaypointUpdater.pose_cb(...)')
 
         self.pose = msg
 
     def waypoints_cb(self, waypoints):
-        rospy.logdebug('MM - WaypointUpdater.waypoints_cb(...)')
+        # rospy.logdebug('MM - WaypointUpdater.waypoints_cb(...)')
 
         self.base_lane = waypoints
         if not self.waypoints_2d:
@@ -140,29 +143,29 @@ class WaypointUpdater(object):
             self.waypoint_tree = KDTree(self.waypoints_2d)
 
     def traffic_cb(self, msg):
-        rospy.logdebug('MM - WaypointUpdater.traffic_cb(...)')
+        # rospy.logdebug('MM - WaypointUpdater.traffic_cb(...)')
 
         self.stopline_wp_idx = msg.data
 
     def obstacle_cb(self, msg):
         # TODO: Callback for /obstacle_waypoint message. We will implement it later
 
-        rospy.logdebug('MM - WaypointUpdater.obstacle_cb(pass)')
+        # rospy.logdebug('MM - WaypointUpdater.obstacle_cb(pass)')
 
         pass
 
     def get_waypoint_velocity(self, waypoint):
-        rospy.logdebug('MM - WaypointUpdater.get_waypoint_velocity(...)')
+        # rospy.logdebug('MM - WaypointUpdater.get_waypoint_velocity(...)')
 
         return waypoint.twist.twist.linear.x
 
     def set_waypoint_velocity(self, waypoints, waypoint, velocity):
-        rospy.logdebug('MM - WaypointUpdater.set_waypoint_velocity(...)')
+        # rospy.logdebug('MM - WaypointUpdater.set_waypoint_velocity(...)')
 
         waypoints[waypoint].twist.twist.linear.x = velocity
 
     def distance(self, waypoints, wp1, wp2):
-        rospy.logdebug('MM - WaypointUpdater.distance(...)')
+        # rospy.logdebug('MM - WaypointUpdater.distance(...)')
 
         dist = 0
         dl = lambda a, b: math.sqrt((a.x-b.x)**2 + (a.y-b.y)**2  + (a.z-b.z)**2)
